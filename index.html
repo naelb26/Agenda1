@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Agenda · Habitudes</title>
+  <meta name="description" content="Agenda hebdomadaire, liste de tâches et suivi d'habitudes.">
+  <meta name="theme-color" content="#8aa0c8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><span></span><span></span></div>
+
+  <header class="top">
+    <div class="hello">
+      <p class="mood" id="mood"></p>
+      <h1 id="greeting">Bonjour</h1>
+      <p class="today" id="todayLabel"></p>
+    </div>
+    <div class="top-actions">
+      <button class="chip" id="themeBtn" title="Thème : automatique selon l'heure">Auto</button>
+      <button class="chip" id="menuBtn" title="Sauvegarde">⋯</button>
+    </div>
+  </header>
+
+  <nav class="views" role="tablist" aria-label="Vue">
+    <button role="tab" data-view="week">Semaine</button>
+    <button role="tab" data-view="month">Mois</button>
+    <button role="tab" data-view="stats">Statistiques</button>
+  </nav>
+
+  <section class="weekbar">
+    <div class="weeknav">
+      <button class="icon" id="prevWeek" aria-label="Précédent">‹</button>
+      <div>
+        <h2 id="weekLabel"></h2>
+        <p class="sub" id="weekSub"></p>
+      </div>
+      <button class="icon" id="nextWeek" aria-label="Suivant">›</button>
+      <button class="chip" id="thisWeek">Aujourd'hui</button>
+    </div>
+    <div class="progress" id="progress">
+      <div class="bar"><i id="progressFill"></i></div>
+      <span id="progressText">0 %</span>
+    </div>
+  </section>
+
+  <main class="layout">
+    <section id="view" aria-live="polite"></section>
+
+    <aside class="side">
+      <section class="card" id="todoCard">
+        <header class="card-head">
+          <h3>À faire</h3>
+          <span class="count" id="todoCount"></span>
+        </header>
+        <form class="add" id="todoForm" autocomplete="off">
+          <input id="todoInput" placeholder="Nouvelle tâche…" maxlength="140">
+          <button aria-label="Ajouter">+</button>
+        </form>
+        <ul class="inbox" id="todoList"></ul>
+        <p class="hint">Glisse une tâche sur un jour pour la planifier.</p>
+      </section>
+
+      <section class="card" id="habitCard">
+        <header class="card-head">
+          <h3>Habitudes</h3>
+          <span class="count" id="habitCount"></span>
+        </header>
+        <div class="habits" id="habits"></div>
+        <form class="add" id="habitForm" autocomplete="off">
+          <input id="habitInput" placeholder="Nouvelle habitude…" maxlength="60">
+          <button aria-label="Ajouter">+</button>
+        </form>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span id="themeLabel"></span>
+  </footer>
+
+  <!-- Édition d'une tâche -->
+  <dialog id="taskDialog">
+    <form method="dialog" id="taskEdit">
+      <h3>Tâche</h3>
+      <label>Titre <input name="title" required maxlength="140"></label>
+      <div class="row">
+        <label>Jour <input name="date" type="date"></label>
+        <label>Heure <input name="time" type="time"></label>
+      </div>
+      <div class="row">
+        <label>Répéter
+          <select name="repeat">
+            <option value="">Jamais</option>
+            <option value="daily">Tous les jours</option>
+            <option value="weekdays">En semaine (lun – ven)</option>
+            <option value="weekly">Toutes les semaines</option>
+            <option value="monthly">Tous les mois</option>
+          </select>
+        </label>
+        <label>Rappel
+          <select name="remind">
+            <option value="">Aucun</option>
+            <option value="0">À l'heure</option>
+            <option value="5">5 min avant</option>
+            <option value="15">15 min avant</option>
+            <option value="30">30 min avant</option>
+            <option value="60">1 h avant</option>
+            <option value="1440">La veille</option>
+          </select>
+        </label>
+      </div>
+      <p class="sub" id="repeatHint" hidden></p>
+      <label>Note <textarea name="note" rows="3" maxlength="500"></textarea></label>
+      <fieldset class="status">
+        <legend id="statusLegend">Réalisée ?</legend>
+        <label><input type="radio" name="status" value="todo"> En attente</label>
+        <label><input type="radio" name="status" value="done"> Oui</label>
+        <label><input type="radio" name="status" value="missed"> Non</label>
+      </fieldset>
+      <div class="dialog-actions">
+        <button type="button" class="danger" id="deleteTask">Supprimer</button>
+        <button type="button" class="ghost" id="skipTask" hidden title="Retirer seulement ce jour de la série">Pas ce jour</button>
+        <span></span>
+        <button value="cancel" formnovalidate class="ghost">Annuler</button>
+        <button value="save" class="primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Édition d'une habitude -->
+  <dialog id="habitDialog">
+    <form method="dialog" id="habitEdit">
+      <h3>Habitude</h3>
+      <label>Nom <input name="name" required maxlength="60"></label>
+      <fieldset class="days">
+        <legend>Jours concernés</legend>
+        <div id="habitDays"></div>
+      </fieldset>
+      <div class="dialog-actions">
+        <button type="button" class="danger" id="deleteHabit">Supprimer</button>
+        <span></span>
+        <button value="cancel" formnovalidate class="ghost">Annuler</button>
+        <button value="save" class="primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Menu sauvegarde -->
+  <dialog id="menuDialog">
+    <form method="dialog">
+      <h3>Sauvegarde</h3>
+      <p class="sub">Tes données restent sur cet appareil. Exporte-les pour les garder ou les transférer.</p>
+      <div class="menu-actions">
+        <button type="button" id="notifBtn">🔔 Activer les notifications</button>
+        <button type="button" id="exportBtn">Exporter (.json)</button>
+        <button type="button" id="importBtn">Importer…</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <button type="button" class="danger" id="resetBtn">Tout effacer</button>
+      </div>
+      <div class="dialog-actions"><span></span><button class="primary">Fermer</button></div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="assertive"></div>
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
