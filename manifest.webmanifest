@@ -1,0 +1,12 @@
+{
+  "name": "Agenda · Habitudes",
+  "short_name": "Agenda",
+  "description": "Agenda hebdomadaire, liste de tâches et suivi d'habitudes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f4f8",
+  "theme_color": "#8aa0c8",
+  "lang": "fr",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
